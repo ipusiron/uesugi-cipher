@@ -178,6 +178,27 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
+    .char-cell.used {
+      background: linear-gradient(135deg, #d4af37 0%, #f4e4a6 100%) !important;
+      color: #8b4513 !important;
+      font-weight: 700 !important;
+      transform: scale(1.05) !important;
+      box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4) !important;
+      border: 2px solid #b8941f !important;
+      animation: highlight-pulse 1s ease-in-out;
+    }
+    
+    @keyframes highlight-pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1.05); }
+    }
+    
+    .char-cell.used:hover {
+      background: linear-gradient(135deg, #b8941f 0%, #d4af37 100%) !important;
+      transform: scale(1.1) !important;
+    }
+    
     .coord-cell { 
       font-size: 1rem; 
       color: white;
@@ -367,6 +388,9 @@
   </div>
 
   <script>
+    // 使用された文字を追跡するSet
+    let usedCharacters = new Set();
+    
     // いろは歌のグリッド生成
     const IROHA_GRID = (function() {
       const chars = 'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん';
@@ -386,6 +410,9 @@
       const useKanji = document.querySelector('input[name=numeral]:checked').value === 'kanji';
       const kanjiNum = ['一','二','三','四','五','六','七'];
       
+      console.log('🎨 showMatrix called');
+      console.log('usedCharacters at render:', Array.from(usedCharacters));
+      
       let html = '<h3>字変四十八表（いろは順）</h3><table>';
       html += '<tr>';
       // 列番号：右上スタートなので左から右へ7,6,5,4,3,2,1の順で表示
@@ -401,7 +428,14 @@
         // いろは文字は元の配置順序のまま（左から右：c=0から6）
         for (let c = 0; c < 7; c++) {
           const char = IROHA_GRID[r][c] || '';
-          html += `<td class="char-cell">${char}</td>`;
+          const isUsed = usedCharacters.has(char);
+          const cellClass = isUsed ? 'char-cell used' : 'char-cell';
+          
+          if (isUsed) {
+            console.log(`Character "${char}" at [${r}][${c}] should be highlighted`);
+          }
+          
+          html += `<td class="${cellClass}">${char}</td>`;
         }
         // 行番号を右側のみに配置
         html += `<th class="coord-cell">${rowLabel}</th></tr>`;
@@ -409,6 +443,15 @@
       html += '</table>';
       
       document.getElementById('matrix').innerHTML = html;
+      
+      // DOMに反映された後のクラスを確認
+      setTimeout(() => {
+        const usedCells = document.querySelectorAll('.char-cell.used');
+        console.log('Highlighted cells in DOM:', usedCells.length);
+        usedCells.forEach(cell => {
+          console.log('Highlighted cell:', cell.textContent, cell.className);
+        });
+      }, 100);
     }
 
     function encrypt(text) {
@@ -418,10 +461,16 @@
       let result = [];
       
       for (let ch of text) {
+        console.log(`Processing character: "${ch}"`);
         let found = false;
         for (let r = 0; r < 7; r++) {
           for (let c = 0; c < 7; c++) {
             if (IROHA_GRID[r][c] === ch) {
+              // 使用された文字を記録
+              usedCharacters.add(ch);
+              console.log(`Added "${ch}" to usedCharacters. Set size:`, usedCharacters.size);
+              console.log('Current usedCharacters:', Array.from(usedCharacters));
+              
               const row = useKanji ? kanjiNum[r] : (r+1);
               const colNum = 7 - c;
               const col = useKanji ? kanjiNum[colNum-1] : colNum;
@@ -437,7 +486,10 @@
           }
           if (found) break;
         }
-        if (!found) result.push(ch);
+        if (!found) {
+          console.log(`Character "${ch}" not found in grid`);
+          result.push(ch);
+        }
       }
       
       return result.join(useKanji ? '　' : ' ');
@@ -461,7 +513,14 @@
           console.log(`Token ${token}: col=${colInput}, row=${rowInput} → grid[${r}][${c}] = "${IROHA_GRID[r][c]}"`);
           
           if (r >= 0 && r < 7 && c >= 0 && c < 7) {
-            result += IROHA_GRID[r][c] || '?';
+            const char = IROHA_GRID[r][c];
+            if (char) {
+              // 使用された文字を記録
+              usedCharacters.add(char);
+              result += char;
+            } else {
+              result += '?';
+            }
           } else {
             result += '?';
           }
@@ -474,7 +533,14 @@
           let c = 7 - kanjiToNum[colStr];
           
           if (r >= 0 && r < 7 && c >= 0 && c < 7) {
-            result += IROHA_GRID[r][c] || '?';
+            const char = IROHA_GRID[r][c];
+            if (char) {
+              // 使用された文字を記録
+              usedCharacters.add(char);
+              result += char;
+            } else {
+              result += '?';
+            }
           } else {
             result += '?';
           }
@@ -490,6 +556,11 @@
 
     function runCipher() {
       console.log('🚀 runCipher started');
+      
+      // 使用文字をリセット
+      console.log('Before reset - usedCharacters:', Array.from(usedCharacters));
+      usedCharacters.clear();
+      console.log('After reset - usedCharacters:', Array.from(usedCharacters));
       
       const mode = document.querySelector('input[name=mode]:checked').value;
       const input = document.getElementById('inputText').value.trim();
