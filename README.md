@@ -16,9 +16,9 @@
 
 以下は実際の画面例です。
 
->![](assets/screenshot.png)
+>![初期画面](assets/screenshot.png)
 >
-> **
+> *初期画面*
 
 ## 🔍 特徴
 
