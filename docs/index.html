@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>字変四十八暗号ツール</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 2em; }
+    textarea, input { width: 100%; margin-bottom: 1em; font-size: 1em; }
+    table { border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #aaa; padding: 0.5em; text-align: center; width: 2em; height: 2em; }
+    .output-area { white-space: pre-wrap; background: #f9f9f9; padding: 1em; border: 1px solid #ccc; }
+    .mode-toggle { margin-bottom: 1em; }
+  </style>
+</head>
+<body>
+  <h1>字変四十八暗号ツール</h1>
+
+  <div class="mode-toggle">
+    <strong>モード切替:</strong><br>
+    <label><input type="radio" name="mode" value="encrypt" checked> 暗号化</label>
+    <label><input type="radio" name="mode" value="decrypt"> 復号</label>
+  </div>
+
+  <div class="mode-toggle">
+    <strong>数字表記:</strong><br>
+    <label><input type="radio" name="numeral" value="arabic" checked> アラビア数字（1-1）</label>
+    <label><input type="radio" name="numeral" value="kanji"> 漢数字（五-三）</label>
+  </div>
+
+  <label for="inputText">入力:</label>
+  <textarea id="inputText" rows="4" placeholder="暗号化: ひみつのてがみ / 復号: 6-1 3-2 1-7"></textarea>
+
+  <button onclick="runCipher()">実行</button>
+
+  <h2>結果:</h2>
+  <div class="output-area" id="outputText"></div>
+
+  <div id="matrix"></div>
+
+  <script>
+    const IROHA_GRID = [
+      ['い','ろ','は','に','ほ','へ','と'],
+      ['ち','り','ぬ','る','を','わ','か'],
+      ['よ','た','れ','そ','つ','ね','な'],
+      ['ら','む','う','ゐ','の','お','く'],
+      ['や','ま','け','ふ','こ','え','て'],
+      ['あ','さ','き','ゆ','め','み','し'],
+      ['ゑ','ひ','も','せ','す','','']
+    ];
+
+    function showMatrix() {
+      let html = '<h3>字変四十八表（いろは順）</h3><table>';
+      for (let r = 0; r < 7; r++) {
+        html += '<tr>';
+        for (let c = 0; c < 7; c++) {
+          html += `<td>${IROHA_GRID[r][c] || ''}</td>`;
+        }
+        html += '</tr>';
+      }
+      html += '</table>';
+      document.getElementById('matrix').innerHTML = html;
+    }
+
+    function encrypt(text) {
+      const useKanji = document.querySelector('input[name=numeral]:checked').value === 'kanji';
+      const kanjiNum = ['一','二','三','四','五','六','七'];
+      let result = [];
+      for (let ch of text) {
+        let found = false;
+        for (let r = 0; r < 7; r++) {
+          for (let c = 0; c < 7; c++) {
+            if (IROHA_GRID[r][c] === ch) {
+              const row = useKanji ? kanjiNum[r] : (r+1);
+              const col = useKanji ? kanjiNum[c] : (c+1);
+              result.push(`${row}-${col}`);
+              found = true;
+              break;
+            }
+          }
+          if (found) break;
+        }
+        if (!found) result.push(ch);
+      }
+      return result.join(' ');
+    }
+
+    function decrypt(text) {
+      let tokens = text.trim().split(/\s+/);
+      let result = '';
+      for (let t of tokens) {
+        if (/^\d-\d$/.test(t)) {
+          let [r, c] = t.split('-').map(n => parseInt(n) - 1);
+          if (r >= 0 && r < 7 && c >= 0 && c < 7) {
+            result += IROHA_GRID[r][c] || '?';
+          } else {
+            result += '?';
+          }
+        } else {
+          result += t; // 数字ペアでないものはそのまま
+        }
+      }
+      return result;
+    }
+
+    function runCipher() {
+      const numeralMode = document.querySelector('input[name=numeral]:checked').value;
+      const mode = document.querySelector('input[name=mode]:checked').value;
+      const input = document.getElementById('inputText').value.trim();
+      let output = '';
+      if (mode === 'encrypt') {
+        output = encrypt(input);
+      } else {
+        output = decrypt(input);
+      }
+      document.getElementById('outputText').textContent = output;
+      showMatrix();
+    }
+
+    showMatrix(); // 初回表示
+  </script>
+</body>
+</html>
