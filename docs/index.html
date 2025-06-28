@@ -349,7 +349,7 @@
 
   <div class="input-section">
     <label for="inputText">入力:</label>
-    <textarea id="inputText" rows="4" placeholder="暗号化: ひみつのてがみ / 復号(アラビア数字): 1-6 2-3 7-1 / 復号(漢数字): 一六　二三　七一"></textarea>
+    <textarea id="inputText" rows="4" placeholder="暗号化: ひみつのてがみ、こんにちは（濁点・半濁点・促音等は自動変換） / 復号(アラビア数字): 1-6 2-3 7-1 / 復号(漢数字): 一六　二三　七一"></textarea>
   </div>
 
   <div class="controls">
@@ -390,6 +390,41 @@
   <script>
     // 使用された文字を追跡するSet
     let usedCharacters = new Set();
+    
+    // 文字変換辞書（濁点・半濁点・促音を清音に変換）
+    const charConversionMap = {
+      // 濁点
+      'が': 'か', 'ぎ': 'き', 'ぐ': 'く', 'げ': 'け', 'ご': 'こ',
+      'ざ': 'さ', 'じ': 'し', 'ず': 'す', 'ぜ': 'せ', 'ぞ': 'そ',
+      'だ': 'た', 'ぢ': 'ち', 'づ': 'つ', 'で': 'て', 'ど': 'と',
+      'ば': 'は', 'び': 'ひ', 'ぶ': 'ふ', 'べ': 'へ', 'ぼ': 'ほ',
+      // 半濁点
+      'ぱ': 'は', 'ぴ': 'ひ', 'ぷ': 'ふ', 'ぺ': 'へ', 'ぽ': 'ほ',
+      // 促音・長音
+      'っ': 'つ',
+      'ー': '',
+      // 拗音（できるだけ近い音に変換）
+      'ゃ': 'や', 'ゅ': 'ゆ', 'ょ': 'よ',
+      'ぁ': 'あ', 'ぃ': 'い', 'ぅ': 'う', 'ぇ': 'え', 'ぉ': 'お'
+    };
+    
+    // 文字変換処理
+    function convertCharacters(text) {
+      let convertedText = '';
+      let conversions = [];
+      
+      for (let char of text) {
+        if (charConversionMap[char]) {
+          const convertedChar = charConversionMap[char];
+          convertedText += convertedChar;
+          conversions.push(`「${char}」→「${convertedChar}」`);
+        } else {
+          convertedText += char;
+        }
+      }
+      
+      return { convertedText, conversions };
+    }
     
     // いろは歌のグリッド生成
     const IROHA_GRID = (function() {
@@ -456,11 +491,17 @@
 
     function encrypt(text) {
       console.log('🔒 ENCRYPT:', text);
+      
+      // 文字変換処理
+      const { convertedText, conversions } = convertCharacters(text);
+      console.log('Converted text:', convertedText);
+      console.log('Conversions:', conversions);
+      
       const useKanji = document.querySelector('input[name=numeral]:checked').value === 'kanji';
       const kanjiNum = ['一','二','三','四','五','六','七'];
       let result = [];
       
-      for (let ch of text) {
+      for (let ch of convertedText) {
         console.log(`Processing character: "${ch}"`);
         let found = false;
         for (let r = 0; r < 7; r++) {
@@ -492,7 +533,10 @@
         }
       }
       
-      return result.join(useKanji ? '　' : ' ');
+      return {
+        encrypted: result.join(useKanji ? '　' : ' '),
+        conversions: conversions
+      };
     }
 
     function decrypt(text) {
@@ -587,8 +631,11 @@
         const validChars = 'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん';
         const invalidChars = [];
         
-        for (let ch of input) {
-          if (!validChars.includes(ch)) {
+        // 変換可能文字も考慮した検証
+        const { convertedText } = convertCharacters(input);
+        
+        for (let ch of convertedText) {
+          if (!validChars.includes(ch) && ch.trim() !== '') {
             invalidChars.push(ch);
           }
         }
@@ -596,10 +643,17 @@
         if (invalidChars.length > 0) {
           const uniqueInvalid = [...new Set(invalidChars)];
           warnings.push(`⚠️ 暗号化できない文字: ${uniqueInvalid.join(', ')}`);
-          warnings.push('対応文字: いろは歌の48文字（「ん」を含む）');
+          warnings.push('対応文字: いろは歌の48文字（「ん」を含む）+ 濁点・半濁点・促音等は自動変換');
         }
         
-        output = encrypt(input);
+        const encryptResult = encrypt(input);
+        output = encryptResult.encrypted;
+        
+        // 文字変換があった場合の通知
+        if (encryptResult.conversions.length > 0) {
+          warnings.unshift(`🔄 文字変換: ${encryptResult.conversions.join(', ')}`);
+        }
+        
       } else {
         const numeral = document.querySelector('input[name=numeral]:checked').value;
         let tokens = input.split(/[\s　]+/);
