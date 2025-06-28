@@ -2,62 +2,383 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>字変四十八暗号ツール</title>
+  <title>字変四十八の上杉暗号ツール</title>
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 2em; }
-    textarea, input { width: 100%; margin-bottom: 1em; font-size: 1em; }
-    table { border-collapse: collapse; margin-top: 1em; }
-    th, td { border: 1px solid #aaa; padding: 0.5em; text-align: center; width: 2em; height: 2em; }
-    .output-area { white-space: pre-wrap; background: #f9f9f9; padding: 1em; border: 1px solid #ccc; }
-    .mode-toggle { margin-bottom: 1em; }
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body { 
+      font-family: 'Noto Sans JP', serif;
+      max-width: 900px; 
+      margin: auto; 
+      padding: 2rem; 
+      background: linear-gradient(135deg, #f7f5f3 0%, #e8e2db 100%);
+      color: #2c2c2c;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #8b4513;
+      font-weight: 700;
+      font-size: 2.2rem;
+      margin-bottom: 2rem;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    h1::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, #d4af37, #8b4513);
+      margin: 1rem auto;
+      border-radius: 2px;
+    }
+    
+    h2, h3 {
+      color: #8b4513;
+      font-weight: 500;
+      margin-top: 2rem;
+    }
+    
+    .input-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 1.5rem;
+      border: 1px solid #e0d4c7;
+    }
+    
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #5a4a3a;
+    }
+    
+    textarea {
+      width: 100%;
+      padding: 1rem;
+      font-size: 1rem;
+      border: 2px solid #e0d4c7;
+      border-radius: 8px;
+      background: #faf9f7;
+      color: #2c2c2c;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      resize: vertical;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #d4af37;
+      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .mode-toggle {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 1px solid #e0d4c7;
+    }
+    
+    .mode-toggle strong {
+      color: #8b4513;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 1rem;
+    }
+    
+    .mode-toggle label {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+    }
+    
+    .mode-toggle label:hover {
+      background-color: #f5f2ef;
+    }
+    
+    input[type="radio"] {
+      margin-right: 0.8rem;
+      width: 18px;
+      height: 18px;
+      accent-color: #d4af37;
+    }
+    
+    .execute-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+      margin-bottom: 2rem;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+    
+    .execute-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+    }
+    
+    .execute-btn:active {
+      transform: translateY(0);
+    }
+    
+    .table-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
+      border: 1px solid #e0d4c7;
+    }
+    
+    table { 
+      border-collapse: separate;
+      border-spacing: 2px;
+      margin: 0 auto;
+      background: #faf9f7;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    th, td { 
+      padding: 0.8rem;
+      text-align: center; 
+      width: 3.5rem; 
+      height: 3.5rem;
+      position: relative;
+    }
+    
+    .char-cell { 
+      font-size: 1.4rem; 
+      font-weight: 500;
+      background: white;
+      border: 1px solid #e0d4c7;
+      border-radius: 6px;
+      color: #2c2c2c;
+      transition: all 0.2s ease;
+    }
+    
+    .char-cell:hover {
+      background: #f0ebe4;
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .coord-cell { 
+      font-size: 1rem; 
+      color: white;
+      background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+      font-weight: 500;
+      border-radius: 6px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    
+    .output-area { 
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      border: 2px solid #e0d4c7;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #2c2c2c;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+      min-height: 80px;
+      white-space: pre-wrap;
+      font-family: 'Noto Sans JP', monospace;
+    }
+    
+    .result-section {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 1px solid #e0d4c7;
+    }
+    
+    .divider {
+      margin: 3rem auto;
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #d4af37 20%, #8b4513 50%, #d4af37 80%, transparent 100%);
+      position: relative;
+    }
+    
+    .divider::before {
+      content: '◆';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #f7f5f3 0%, #e8e2db 100%);
+      color: #8b4513;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      border-radius: 50%;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 0;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 1px solid #e0d4c7;
+      color: #5a4a3a;
+      font-size: 0.95rem;
+    }
+    
+    .footer a {
+      color: #d4af37 !important;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .footer a:hover {
+      color: #b8941f !important;
+      text-decoration: underline;
+    }
+    
+    @media (max-width: 768px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      
+      body {
+        padding: 1rem;
+      }
+      
+      th, td {
+        width: 2.8rem;
+        height: 2.8rem;
+        padding: 0.5rem;
+      }
+      
+      .char-cell {
+        font-size: 1.2rem;
+      }
+      
+      .divider {
+        width: 80%;
+        margin: 2rem auto;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>字変四十八暗号ツール</h1>
+  <h1>字変四十八の上杉暗号ツール</h1>
 
-  <div class="mode-toggle">
-    <strong>モード切替:</strong><br>
-    <label><input type="radio" name="mode" value="encrypt" checked> 暗号化</label>
-    <label><input type="radio" name="mode" value="decrypt"> 復号</label>
+  <div class="input-section">
+    <label for="inputText">入力:</label>
+    <textarea id="inputText" rows="4" placeholder="暗号化: ひみつのてがみ / 復号(アラビア数字): 1-6 2-3 7-1 / 復号(漢数字): 一六　二三　七一"></textarea>
   </div>
 
-  <div class="mode-toggle">
-    <strong>数字表記:</strong><br>
-    <label><input type="radio" name="numeral" value="arabic" checked> アラビア数字（1-1）</label>
-    <label><input type="radio" name="numeral" value="kanji"> 漢数字（五-三）</label>
+  <div class="controls">
+    <div class="mode-toggle">
+      <strong>モード切替</strong>
+      <label><input type="radio" name="mode" value="encrypt" checked> 暗号化</label>
+      <label><input type="radio" name="mode" value="decrypt"> 復号</label>
+    </div>
+
+    <div class="mode-toggle">
+      <strong>数字表記</strong>
+      <label><input type="radio" name="numeral" value="arabic" checked> アラビア数字（5-7：列-行）</label>
+      <label><input type="radio" name="numeral" value="kanji"> 漢数字（五七：列行）</label>
+    </div>
   </div>
 
-  <label for="inputText">入力:</label>
-  <textarea id="inputText" rows="4" placeholder="暗号化: ひみつのてがみ / 復号: 6-1 3-2 1-7"></textarea>
+  <button class="execute-btn" onclick="runCipher()">実行</button>
 
-  <button onclick="runCipher()">実行</button>
+  <div class="table-container" id="matrix"></div>
 
-  <h2>結果:</h2>
-  <div class="output-area" id="outputText"></div>
+  <div class="result-section">
+    <h2>結果</h2>
+    <div class="output-area" id="outputText"></div>
+  </div>
 
-  <div id="matrix"></div>
+  <div class="divider"></div>
+
+  <div class="footer">
+    🔗 GitHubリポジトリはこちら（<a href="https://github.com/ipusiron/uesugi-cipher" target="_blank" style="color: #007bff; text-decoration: none;">ipusiron/uesugi-cipher</a>）
+  </div>
 
   <script>
-    const IROHA_GRID = [
-      ['い','ろ','は','に','ほ','へ','と'],
-      ['ち','り','ぬ','る','を','わ','か'],
-      ['よ','た','れ','そ','つ','ね','な'],
-      ['ら','む','う','ゐ','の','お','く'],
-      ['や','ま','け','ふ','こ','え','て'],
-      ['あ','さ','き','ゆ','め','み','し'],
-      ['ゑ','ひ','も','せ','す','','']
-    ];
+    const IROHA_GRID = (function() {
+      const chars = 'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん';
+      const grid = Array.from({ length: 7 }, () => Array(7).fill(''));
+      let index = 0;
+      for (let c = 6; c >= 0; c--) { // 右から左の列
+        for (let r = 0; r < 7; r++) { // 上から下の行
+          if (index < chars.length) {
+            grid[r][c] = chars[index++];
+          }
+        }
+      }
+      return grid;
+    })();
+
+
 
     function showMatrix() {
+      const useKanji = document.querySelector('input[name=numeral]:checked').value === 'kanji';
+      const kanjiNum = ['一','二','三','四','五','六','七'];
+      
       let html = '<h3>字変四十八表（いろは順）</h3><table>';
+      html += '<tr>';
+      // 列番号：右上スタートなので右から左へ7,6,5,4,3,2,1
+      for (let c = 0; c < 7; c++) {
+        const colLabel = useKanji ? kanjiNum[6-c] : (7-c);
+        html += `<th class="coord-cell">${colLabel}</th>`;
+      }
+      html += '<th></th></tr>';
+      
       for (let r = 0; r < 7; r++) {
-        html += '<tr>';
+        const rowLabel = useKanji ? kanjiNum[r] : (r+1);
+        html += `<tr>`;
+        // 文字は元の配置順序のまま
         for (let c = 0; c < 7; c++) {
-          html += `<td>${IROHA_GRID[r][c] || ''}</td>`;
+          const char = IROHA_GRID[r][c] || '';
+          html += `<td class="char-cell">${char}</td>`;
         }
-        html += '</tr>';
+        // 行番号を右側のみに配置
+        html += `<th class="coord-cell">${rowLabel}</th></tr>`;
       }
       html += '</table>';
+      
       document.getElementById('matrix').innerHTML = html;
     }
 
@@ -71,8 +392,15 @@
           for (let c = 0; c < 7; c++) {
             if (IROHA_GRID[r][c] === ch) {
               const row = useKanji ? kanjiNum[r] : (r+1);
-              const col = useKanji ? kanjiNum[c] : (c+1);
-              result.push(`${row}-${col}`);
+              // 列番号：表示上は右上スタートなので 7-c
+              const colNum = 7 - c;
+              const col = useKanji ? kanjiNum[colNum-1] : colNum;
+              // 漢数字の場合はハイフンなし、アラビア数字の場合はハイフンあり
+              if (useKanji) {
+                result.push(`${col}${row}`);
+              } else {
+                result.push(`${col}-${row}`);
+              }
               found = true;
               break;
             }
@@ -81,13 +409,16 @@
         }
         if (!found) result.push(ch);
       }
-      return result.join(' ');
+      // 漢数字の場合は全角スペース、アラビア数字の場合は半角スペース
+      return result.join(useKanji ? '　' : ' ');
     }
 
     function decrypt(text) {
+      const kanjiToNum = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7};
       let tokens = text.trim().split(/\s+/);
       let result = '';
       for (let t of tokens) {
+        // アラビア数字パターン
         if (/^\d-\d$/.test(t)) {
           let [r, c] = t.split('-').map(n => parseInt(n) - 1);
           if (r >= 0 && r < 7 && c >= 0 && c < 7) {
@@ -95,7 +426,19 @@
           } else {
             result += '?';
           }
-        } else {
+        }
+        // 漢数字パターン
+        else if (/^[一二三四五六七]-[一二三四五六七]$/.test(t)) {
+          let [rStr, cStr] = t.split('-');
+          let r = kanjiToNum[rStr] - 1;
+          let c = kanjiToNum[cStr] - 1;
+          if (r >= 0 && r < 7 && c >= 0 && c < 7) {
+            result += IROHA_GRID[r][c] || '?';
+          } else {
+            result += '?';
+          }
+        }
+        else {
           result += t; // 数字ペアでないものはそのまま
         }
       }
@@ -103,7 +446,6 @@
     }
 
     function runCipher() {
-      const numeralMode = document.querySelector('input[name=numeral]:checked').value;
       const mode = document.querySelector('input[name=mode]:checked').value;
       const input = document.getElementById('inputText').value.trim();
       let output = '';
@@ -115,6 +457,13 @@
       document.getElementById('outputText').textContent = output;
       showMatrix();
     }
+
+    // ラジオボタンの変更を監視
+    document.addEventListener('change', function(e) {
+      if (e.target.name === 'numeral') {
+        showMatrix();
+      }
+    });
 
     showMatrix(); // 初回表示
   </script>
