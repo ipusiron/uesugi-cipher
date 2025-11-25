@@ -1,3 +1,39 @@
+<!--
+---
+id: day012
+slug: uesugi-cipher
+
+title: "上杉暗号ツール"
+
+subtitle_ja: "字変四十八方式の換字式暗号を体験"
+subtitle_en: "Experience the Uesugi Cipher with Jigawara 48 Method"
+
+description_ja: "戦国時代に宇佐美定行が記したとされる「字変四十八」方式に基づく換字式暗号を、いろは順の7×7マトリクスで再現するWebツールです。暗号化・復号の双方向変換、使用文字のハイライト表示に対応。"
+description_en: "A web tool that recreates the substitution cipher based on the 'Jigawara 48' method attributed to Usami Sadayuki of the Sengoku period, using a 7x7 iroha-ordered matrix. Supports bidirectional encryption/decryption with character highlighting."
+
+category_ja:
+  - 古典暗号
+  - 換字式暗号
+category_en:
+  - Classical Cryptography
+  - Substitution Cipher
+
+difficulty: 1
+
+tags:
+  - 上杉暗号
+  - 換字式暗号
+  - いろは順
+  - 日本史
+  - 古典暗号
+
+repo_url: "https://github.com/ipusiron/uesugi-cipher"
+demo_url: "https://ipusiron.github.io/uesugi-cipher/"
+
+hub: true
+---
+-->
+
 # 上杉暗号ツール（Uesugi Cipher Tool）
 
 **Day12 - 生成AIで作るセキュリティツール100**
