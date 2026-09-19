@@ -2,742 +2,101 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="いろは48文字の上杉暗号を、標準表・数字鍵・かな鍵で体験できる暗号化・復号ツールです。">
   <title>字変四十八の上杉暗号ツール</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&display=swap');
-    
-    * { box-sizing: border-box; }
-    
-    body { 
-      font-family: 'Noto Sans JP', serif;
-      max-width: 900px; 
-      margin: auto; 
-      padding: 2rem; 
-      background: linear-gradient(135deg, #f7f5f3 0%, #e8e2db 100%);
-      color: #2c2c2c;
-      line-height: 1.6;
-      min-height: 100vh;
-    }
-    
-    h1 {
-      text-align: center;
-      color: #8b4513;
-      font-weight: 700;
-      font-size: 2.2rem;
-      margin-bottom: 2rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    h1::after {
-      content: '';
-      display: block;
-      width: 80px;
-      height: 3px;
-      background: linear-gradient(90deg, #d4af37, #8b4513);
-      margin: 1rem auto;
-      border-radius: 2px;
-    }
-    
-    .input-section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      margin-bottom: 1.5rem;
-      border: 1px solid #e0d4c7;
-    }
-    
-    label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      color: #5a4a3a;
-    }
-    
-    textarea {
-      width: 100%;
-      padding: 1rem;
-      font-size: 1rem;
-      border: 2px solid #e0d4c7;
-      border-radius: 8px;
-      background: #faf9f7;
-      color: #2c2c2c;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-      resize: vertical;
-      font-family: 'Noto Sans JP', sans-serif;
-    }
-    
-    textarea:focus {
-      outline: none;
-      border-color: #d4af37;
-      box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-    }
-    
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-    
-    .mode-toggle {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      border: 1px solid #e0d4c7;
-    }
-    
-    .mode-toggle strong {
-      color: #8b4513;
-      font-weight: 500;
-      display: block;
-      margin-bottom: 1rem;
-    }
-    
-    .mode-toggle label {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.8rem;
-      cursor: pointer;
-      padding: 0.5rem;
-      border-radius: 6px;
-      transition: background-color 0.2s ease;
-    }
-    
-    .mode-toggle label:hover {
-      background-color: #f5f2ef;
-    }
-    
-    input[type="radio"] {
-      margin-right: 0.8rem;
-      width: 18px;
-      height: 18px;
-      accent-color: #d4af37;
-    }
-    
-    .execute-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
-      color: white;
-      border: none;
-      padding: 1rem 2rem;
-      font-size: 1.1rem;
-      font-weight: 500;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
-      margin-bottom: 2rem;
-      font-family: 'Noto Sans JP', sans-serif;
-    }
-    
-    .execute-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
-    }
-    
-    .table-container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      margin-bottom: 2rem;
-      border: 1px solid #e0d4c7;
-    }
-    
-    table { 
-      border-collapse: separate;
-      border-spacing: 2px;
-      margin: 0 auto;
-      background: #faf9f7;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    
-    th, td { 
-      padding: 0.8rem;
-      text-align: center; 
-      width: 3.5rem; 
-      height: 3.5rem;
-    }
-    
-    .char-cell { 
-      font-size: 1.4rem; 
-      font-weight: 500;
-      background: white;
-      border: 1px solid #e0d4c7;
-      border-radius: 6px;
-      color: #2c2c2c;
-      transition: all 0.2s ease;
-    }
-    
-    .char-cell:hover {
-      background: #f0ebe4;
-      transform: scale(1.05);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    
-    .char-cell.used {
-      background: linear-gradient(135deg, #d4af37 0%, #f4e4a6 100%) !important;
-      color: #8b4513 !important;
-      font-weight: 700 !important;
-      transform: scale(1.05) !important;
-      box-shadow: 0 3px 10px rgba(212, 175, 55, 0.4) !important;
-      border: 2px solid #b8941f !important;
-      animation: highlight-pulse 1s ease-in-out;
-    }
-    
-    @keyframes highlight-pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1.05); }
-    }
-    
-    .char-cell.used:hover {
-      background: linear-gradient(135deg, #b8941f 0%, #d4af37 100%) !important;
-      transform: scale(1.1) !important;
-    }
-    
-    .coord-cell { 
-      font-size: 1rem; 
-      color: white;
-      background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
-      font-weight: 500;
-      border-radius: 6px;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    }
-    
-    .result-section {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      border: 1px solid #e0d4c7;
-    }
-    
-    .result-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    
-    .result-header h2 {
-      margin: 0;
-      color: #8b4513;
-      font-weight: 500;
-    }
-    
-    .result-message {
-      color: #5a4a3a;
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
-      padding: 0.5rem;
-      background: #f5f2ef;
-      border-radius: 6px;
-      display: none;
-    }
-    
-    .result-message.show {
-      display: block;
-    }
-    
-    .copy-btn {
-      background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      font-size: 0.9rem;
-      font-weight: 500;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
-      font-family: 'Noto Sans JP', sans-serif;
-    }
-    
-    .copy-btn:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-    }
-    
-    .copy-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
-    .copy-btn.success {
-      background: linear-gradient(135deg, #28a745 0%, #20753d 100%);
-    }
-    
-    .output-area { 
-      background: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 2px solid #e0d4c7;
-      font-size: 1.1rem;
-      line-height: 1.8;
-      color: #2c2c2c;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-      min-height: 80px;
-      white-space: pre-wrap;
-      font-family: 'Noto Sans JP', monospace;
-    }
-    
-    .divider {
-      margin: 3rem auto;
-      width: 60%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent 0%, #d4af37 20%, #8b4513 50%, #d4af37 80%, transparent 100%);
-      position: relative;
-    }
-    
-    .divider::before {
-      content: '◆';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(135deg, #f7f5f3 0%, #e8e2db 100%);
-      color: #8b4513;
-      font-size: 1.2rem;
-      padding: 0.5rem;
-      border-radius: 50%;
-      width: 2rem;
-      height: 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .footer {
-      text-align: center;
-      margin-top: 0;
-      padding: 1.5rem;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      border: 1px solid #e0d4c7;
-      color: #5a4a3a;
-      font-size: 0.95rem;
-    }
-    
-    .footer a {
-      color: #d4af37 !important;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-    
-    .footer a:hover {
-      color: #b8941f !important;
-      text-decoration: underline;
-    }
-    
-    @media (max-width: 768px) {
-      .controls { grid-template-columns: 1fr; }
-      body { padding: 1rem; }
-      th, td { width: 2.8rem; height: 2.8rem; padding: 0.5rem; }
-      .char-cell { font-size: 1.2rem; }
-      .divider { width: 80%; margin: 2rem auto; }
-    }
-  </style>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1>字変四十八の上杉暗号ツール</h1>
+  <header>
+    <h1>字変四十八の上杉暗号ツール</h1>
+    <button id="themeToggle" class="theme-toggle" aria-label="ダークモードに切り替え" aria-pressed="false">🌙</button>
+  </header>
+  <noscript>このツールを使うには、ブラウザーのJavaScriptを有効にしてください。</noscript>
+  <main class="app">
+  <section class="work-area" aria-label="暗号の入力と結果">
 
   <div class="input-section">
     <label for="inputText">入力:</label>
-    <textarea id="inputText" rows="4" placeholder="暗号化: ひみつのてがみ、こんにちは（濁点・半濁点・促音等は自動変換） / 復号(アラビア数字): 1-6 2-3 7-1 / 復号(漢数字): 一六　二三　七一"></textarea>
+    <textarea id="inputText" rows="2" placeholder="例: てきみゆ（濁点・カタカナは清音のひらがなに自動変換します）"></textarea>
+    <p class="input-hint">空白は省き、改行は残します。入力は10,000文字までです。</p>
   </div>
 
+  <h2 class="settings-heading">設定</h2>
   <div class="controls">
-    <div class="mode-toggle">
-      <strong>モード切替</strong>
+    <fieldset class="mode-toggle">
+      <legend>モード切替</legend>
       <label><input type="radio" name="mode" value="encrypt" checked> 暗号化</label>
       <label><input type="radio" name="mode" value="decrypt"> 復号</label>
-    </div>
+    </fieldset>
 
-    <div class="mode-toggle">
-      <strong>数字表記</strong>
-      <label><input type="radio" name="numeral" value="arabic" checked> アラビア数字（「列-行」表記、例：5-7）</label>
-      <label><input type="radio" name="numeral" value="kanji"> 漢数字（「列行」表記、例：五七）</label>
-    </div>
+    <fieldset class="mode-toggle" id="notationGroup" aria-describedby="notationHint">
+      <legend>数字表記（暗号化の出力と表の見出し）</legend>
+      <label><input type="radio" name="numeral" value="arabic" checked> アラビア数字</label>
+      <label><input type="radio" name="numeral" value="kanji"> 漢数字</label>
+      <p id="notationHint" class="input-hint" hidden>かなの鍵では数字表記を使いません。</p>
+    </fieldset>
   </div>
 
-  <button class="execute-btn" onclick="runCipher()">実行</button>
-
-  <div class="table-container" id="matrix"></div>
+  <fieldset class="mode-toggle key-settings">
+    <legend>鍵</legend>
+    <div class="key-modes">
+      <label><input type="radio" name="keyMode" value="standard" checked>標準（鍵なし）</label>
+      <label><input type="radio" name="keyMode" value="numeric">数字の並べ替え</label>
+      <label><input type="radio" name="keyMode" value="kana">かな7文字×2（和歌の下の句など）</label>
+    </div>
+    <div id="keyFields" hidden>
+      <div class="key-inputs">
+        <div>
+          <label for="colKey">列の鍵（右の列から順に）</label>
+          <input id="colKey" type="text" autocomplete="off" spellcheck="false" aria-describedby="colKeyMessage">
+          <p id="colKeyMessage" class="key-message" aria-live="polite"></p>
+        </div>
+        <div>
+          <label for="rowKey">行の鍵（上の行から順に）</label>
+          <input id="rowKey" type="text" autocomplete="off" spellcheck="false" aria-describedby="rowKeyMessage">
+          <p id="rowKeyMessage" class="key-message" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="key-actions">
+        <button id="keyExampleBtn" class="copy-btn">例を入れる</button>
+        <button id="keyRandomBtn" class="copy-btn">ランダムに作る</button>
+      </div>
+      <p id="kanaExampleHint" class="input-hint" hidden>かなの例は阿倍仲麻呂の歌の下の句です。重複のない句の例として選んだもので、史料に載っている鍵ではありません。</p>
+    </div>
+  </fieldset>
+  <button class="execute-btn" id="runBtn">実行</button>
 
   <div class="result-section">
     <div class="result-header">
       <h2>結果</h2>
-      <button class="copy-btn" onclick="copyResult()" id="copyBtn" disabled>
+      <button class="copy-btn" id="swapBtn" disabled>結果を入力に送る</button>
+      <button class="copy-btn" id="copyBtn" disabled>
         📋 コピー
       </button>
     </div>
-    <div class="result-message" id="resultMessage"></div>
-    <div class="output-area" id="outputText"></div>
+    <div class="result-message" id="resultMessage" aria-live="polite"></div>
+    <div class="output-area" id="outputText" aria-live="polite" tabindex="0"></div>
   </div>
+  </section>
+  <section class="table-container" aria-labelledby="matrixHeading">
+    <h2 id="matrixHeading">換字表</h2>
+    <div id="matrix"></div>
+    <p class="input-hint">右上から縦に並べ、列→行の順に読みます。列7・行7は空きマスです。</p>
+  </section>
+  </main>
 
   <div class="divider"></div>
 
-  <div class="footer">
-    🔗 GitHubリポジトリはこちら（<a href="https://github.com/ipusiron/uesugi-cipher" target="_blank">ipusiron/uesugi-cipher</a>）
-  </div>
+  <footer class="footer">
+    🔗 GitHubリポジトリーはこちら（<a href="https://github.com/ipusiron/uesugi-cipher" target="_blank" rel="noopener noreferrer">ipusiron/uesugi-cipher</a>）
+  </footer>
 
-  <script>
-    // 使用された文字を追跡するSet
-    let usedCharacters = new Set();
-    
-    // 文字変換辞書（濁点・半濁点・促音を清音に変換）
-    const charConversionMap = {
-      // 濁点
-      'が': 'か', 'ぎ': 'き', 'ぐ': 'く', 'げ': 'け', 'ご': 'こ',
-      'ざ': 'さ', 'じ': 'し', 'ず': 'す', 'ぜ': 'せ', 'ぞ': 'そ',
-      'だ': 'た', 'ぢ': 'ち', 'づ': 'つ', 'で': 'て', 'ど': 'と',
-      'ば': 'は', 'び': 'ひ', 'ぶ': 'ふ', 'べ': 'へ', 'ぼ': 'ほ',
-      // 半濁点
-      'ぱ': 'は', 'ぴ': 'ひ', 'ぷ': 'ふ', 'ぺ': 'へ', 'ぽ': 'ほ',
-      // 促音・長音
-      'っ': 'つ',
-      'ー': '',
-      // 拗音（できるだけ近い音に変換）
-      'ゃ': 'や', 'ゅ': 'ゆ', 'ょ': 'よ',
-      'ぁ': 'あ', 'ぃ': 'い', 'ぅ': 'う', 'ぇ': 'え', 'ぉ': 'お'
-    };
-    
-    // 文字変換処理
-    function convertCharacters(text) {
-      let convertedText = '';
-      let conversions = [];
-      
-      for (let char of text) {
-        if (charConversionMap[char]) {
-          const convertedChar = charConversionMap[char];
-          convertedText += convertedChar;
-          conversions.push(`「${char}」→「${convertedChar}」`);
-        } else {
-          convertedText += char;
-        }
-      }
-      
-      return { convertedText, conversions };
-    }
-    
-    // いろは歌のグリッド生成
-    const IROHA_GRID = (function() {
-      const chars = 'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん';
-      const grid = Array.from({ length: 7 }, () => Array(7).fill(''));
-      let index = 0;
-      for (let c = 6; c >= 0; c--) { // 右から左の列
-        for (let r = 0; r < 7; r++) { // 上から下の行
-          if (index < chars.length) {
-            grid[r][c] = chars[index++];
-          }
-        }
-      }
-      return grid;
-    })();
-
-    function showMatrix() {
-      const useKanji = document.querySelector('input[name=numeral]:checked').value === 'kanji';
-      const kanjiNum = ['一','二','三','四','五','六','七'];
-      
-      console.log('🎨 showMatrix called');
-      console.log('usedCharacters at render:', Array.from(usedCharacters));
-      
-      let html = '<h3>字変四十八表（いろは順）</h3><table>';
-      html += '<tr>';
-      // 列番号：右上スタートなので左から右へ7,6,5,4,3,2,1の順で表示
-      for (let c = 0; c < 7; c++) {
-        const colLabel = useKanji ? kanjiNum[6-c] : (7-c);
-        html += `<th class="coord-cell">${colLabel}</th>`;
-      }
-      html += '<th></th></tr>';
-      
-      for (let r = 0; r < 7; r++) {
-        const rowLabel = useKanji ? kanjiNum[r] : (r+1);
-        html += `<tr>`;
-        // いろは文字は元の配置順序のまま（左から右：c=0から6）
-        for (let c = 0; c < 7; c++) {
-          const char = IROHA_GRID[r][c] || '';
-          const isUsed = usedCharacters.has(char);
-          const cellClass = isUsed ? 'char-cell used' : 'char-cell';
-          
-          if (isUsed) {
-            console.log(`Character "${char}" at [${r}][${c}] should be highlighted`);
-          }
-          
-          html += `<td class="${cellClass}">${char}</td>`;
-        }
-        // 行番号を右側のみに配置
-        html += `<th class="coord-cell">${rowLabel}</th></tr>`;
-      }
-      html += '</table>';
-      
-      document.getElementById('matrix').innerHTML = html;
-      
-      // DOMに反映された後のクラスを確認
-      setTimeout(() => {
-        const usedCells = document.querySelectorAll('.char-cell.used');
-        console.log('Highlighted cells in DOM:', usedCells.length);
-        usedCells.forEach(cell => {
-          console.log('Highlighted cell:', cell.textContent, cell.className);
-        });
-      }, 100);
-    }
-
-    function encrypt(text) {
-      console.log('🔒 ENCRYPT:', text);
-      
-      // 文字変換処理
-      const { convertedText, conversions } = convertCharacters(text);
-      console.log('Converted text:', convertedText);
-      console.log('Conversions:', conversions);
-      
-      const useKanji = document.querySelector('input[name=numeral]:checked').value === 'kanji';
-      const kanjiNum = ['一','二','三','四','五','六','七'];
-      let result = [];
-      
-      for (let ch of convertedText) {
-        console.log(`Processing character: "${ch}"`);
-        let found = false;
-        for (let r = 0; r < 7; r++) {
-          for (let c = 0; c < 7; c++) {
-            if (IROHA_GRID[r][c] === ch) {
-              // 使用された文字を記録
-              usedCharacters.add(ch);
-              console.log(`Added "${ch}" to usedCharacters. Set size:`, usedCharacters.size);
-              console.log('Current usedCharacters:', Array.from(usedCharacters));
-              
-              const row = useKanji ? kanjiNum[r] : (r+1);
-              const colNum = 7 - c;
-              const col = useKanji ? kanjiNum[colNum-1] : colNum;
-              
-              if (useKanji) {
-                result.push(`${col}${row}`);
-              } else {
-                result.push(`${col}-${row}`);
-              }
-              found = true;
-              break;
-            }
-          }
-          if (found) break;
-        }
-        if (!found) {
-          console.log(`Character "${ch}" not found in grid`);
-          result.push(ch);
-        }
-      }
-      
-      return {
-        encrypted: result.join(useKanji ? '　' : ' '),
-        conversions: conversions
-      };
-    }
-
-    function decrypt(text) {
-      console.log('🔓 DECRYPT:', text);
-      const kanjiToNum = {'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7};
-      let tokens = text.trim().split(/[\s　]+/);
-      let result = '';
-      
-      for (let token of tokens) {
-        console.log('Processing token:', token);
-        
-        // アラビア数字パターン（列-行の順）
-        if (/^\d-\d$/.test(token)) {
-          let [colInput, rowInput] = token.split('-').map(n => parseInt(n));
-          let r = rowInput - 1; // 行番号を内部インデックスに
-          let c = 7 - colInput; // 列番号を内部インデックスに
-          
-          console.log(`Token ${token}: col=${colInput}, row=${rowInput} → grid[${r}][${c}] = "${IROHA_GRID[r][c]}"`);
-          
-          if (r >= 0 && r < 7 && c >= 0 && c < 7) {
-            const char = IROHA_GRID[r][c];
-            if (char) {
-              // 使用された文字を記録
-              usedCharacters.add(char);
-              result += char;
-            } else {
-              result += '?';
-            }
-          } else {
-            result += '?';
-          }
-        }
-        // 漢数字パターン
-        else if (/^[一二三四五六七][一二三四五六七]$/.test(token)) {
-          let colStr = token.charAt(0);
-          let rowStr = token.charAt(1);
-          let r = kanjiToNum[rowStr] - 1;
-          let c = 7 - kanjiToNum[colStr];
-          
-          if (r >= 0 && r < 7 && c >= 0 && c < 7) {
-            const char = IROHA_GRID[r][c];
-            if (char) {
-              // 使用された文字を記録
-              usedCharacters.add(char);
-              result += char;
-            } else {
-              result += '?';
-            }
-          } else {
-            result += '?';
-          }
-        }
-        else {
-          result += token;
-        }
-      }
-      
-      console.log('Final result:', result);
-      return result;
-    }
-
-    function runCipher() {
-      console.log('🚀 runCipher started');
-      
-      // 使用文字をリセット
-      console.log('Before reset - usedCharacters:', Array.from(usedCharacters));
-      usedCharacters.clear();
-      console.log('After reset - usedCharacters:', Array.from(usedCharacters));
-      
-      const mode = document.querySelector('input[name=mode]:checked').value;
-      const input = document.getElementById('inputText').value.trim();
-      const copyBtn = document.getElementById('copyBtn');
-      const resultMessage = document.getElementById('resultMessage');
-      const outputText = document.getElementById('outputText');
-      
-      console.log('Mode:', mode, 'Input:', input);
-      
-      if (!input) {
-        resultMessage.textContent = '⚠️ 入力が空です。テキストを入力してください。';
-        resultMessage.classList.add('show');
-        outputText.textContent = '';
-        copyBtn.disabled = true;
-        showMatrix();
-        return;
-      }
-
-      let output = '';
-      let warnings = [];
-      
-      // 入力検証
-      if (mode === 'encrypt') {
-        const validChars = 'いろはにほへとちりぬるをわかよたれそつねならむうゐのおくやまけふこえてあさきゆめみしゑひもせすん';
-        const invalidChars = [];
-        
-        // 変換可能文字も考慮した検証
-        const { convertedText } = convertCharacters(input);
-        
-        for (let ch of convertedText) {
-          if (!validChars.includes(ch) && ch.trim() !== '') {
-            invalidChars.push(ch);
-          }
-        }
-        
-        if (invalidChars.length > 0) {
-          const uniqueInvalid = [...new Set(invalidChars)];
-          warnings.push(`⚠️ 暗号化できない文字: ${uniqueInvalid.join(', ')}`);
-          warnings.push('対応文字: いろは歌の48文字（「ん」を含む）+ 濁点・半濁点・促音等は自動変換');
-        }
-        
-        const encryptResult = encrypt(input);
-        output = encryptResult.encrypted;
-        
-        // 文字変換があった場合の通知
-        if (encryptResult.conversions.length > 0) {
-          warnings.unshift(`🔄 文字変換: ${encryptResult.conversions.join(', ')}`);
-        }
-        
-      } else {
-        const numeral = document.querySelector('input[name=numeral]:checked').value;
-        let tokens = input.split(/[\s　]+/);
-        let invalidTokens = [];
-        
-        for (let token of tokens) {
-          if (numeral === 'arabic') {
-            if (/^\d-\d$/.test(token)) {
-              let [col, row] = token.split('-').map(n => parseInt(n));
-              if (!(col >= 1 && col <= 7 && row >= 1 && row <= 7)) {
-                invalidTokens.push(`${token}（範囲外）`);
-              }
-            } else if (token.length > 0) {
-              invalidTokens.push(`${token}（書式エラー）`);
-            }
-          } else {
-            if (!/^[一二三四五六七][一二三四五六七]$/.test(token) && token.length > 0) {
-              invalidTokens.push(`${token}（書式エラー）`);
-            }
-          }
-        }
-        
-        if (invalidTokens.length > 0) {
-          warnings.push('⚠️ 復号できない形式: ' + invalidTokens.join(', '));
-          if (numeral === 'arabic') {
-            warnings.push('正しい形式例: 「5-7 6-3」（列-行、半角スペース区切り）');
-          } else {
-            warnings.push('正しい形式例: 「五七　六三」（列行、全角スペース区切り）');
-          }
-        }
-        
-        output = decrypt(input);
-      }
-      
-      console.log('Output:', output);
-      
-      // 結果表示
-      if (warnings.length > 0) {
-        resultMessage.textContent = warnings.join('\n');
-        resultMessage.classList.add('show');
-      } else {
-        resultMessage.textContent = '✅ 処理が完了しました';
-        resultMessage.classList.add('show');
-      }
-      
-      outputText.textContent = output;
-      copyBtn.disabled = !output.trim();
-      showMatrix();
-    }
-
-    function copyResult() {
-      const outputElement = document.getElementById('outputText');
-      const copyBtn = document.getElementById('copyBtn');
-      const text = outputElement.textContent.trim();
-      
-      if (!text) return;
-
-      navigator.clipboard.writeText(text).then(() => {
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = '✅ コピー完了';
-        copyBtn.classList.add('success');
-        
-        setTimeout(() => {
-          copyBtn.textContent = originalText;
-          copyBtn.classList.remove('success');
-        }, 2000);
-      }).catch(() => {
-        const originalText = copyBtn.textContent;
-        copyBtn.textContent = '❌ コピー失敗';
-        
-        setTimeout(() => {
-          copyBtn.textContent = originalText;
-        }, 2000);
-      });
-    }
-
-    // ラジオボタンの変更を監視
-    document.addEventListener('change', function(e) {
-      if (e.target.name === 'numeral') {
-        showMatrix();
-      }
-    });
-
-    showMatrix(); // 初回表示
-  </script>
+  <script src="js/uesugi-logic.js" defer></script>
+  <script src="js/script.js" defer></script>
 </body>
 </html>
