@@ -407,7 +407,6 @@ th, td {
 /* 入力→設定→結果→表の順序を維持して、広い画面だけ2カラムにする。 */
 header {
   position: relative;
-  padding-right: 48px;
 }
 
 h1 {
@@ -420,16 +419,33 @@ h2 {
   margin: 0 0 0.5rem;
 }
 
-.theme-toggle {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 44px;
-  height: 44px;
+/* 言語とテーマのボタンは横並びにして、狭い画面でも見出しに重ねない。 */
+.header-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+}
+
+.theme-toggle, .lang-toggle {
+  min-height: 44px;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
   border-radius: 8px;
+  cursor: pointer;
+}
+
+.theme-toggle {
+  width: 44px;
+  height: 44px;
+}
+
+.lang-toggle {
+  padding: 0 0.75rem;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .app {

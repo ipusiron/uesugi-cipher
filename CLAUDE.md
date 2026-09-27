@@ -7,6 +7,7 @@ Day012の字変四十八方式を体験する静的Webツールです。vanilla 
 - docs/index.html：入力・設定・結果・換字表
 - docs/css/style.css：和風カード、ライト・ダーク、モバイル表示
 - docs/js/uesugi-logic.js：DOMと乱数源に依存しない純粋ロジック
+- docs/js/i18n.js：日本語と英語の文言、data-i18nの適用、言語の保存
 - docs/js/script.js：DOM構築、入力検証、コピー、テーマ、乱数の供給
 - test/：node:testとnode:assert/strictによるテスト
 - .github/workflows/test.yml：Node 22のnpm test
@@ -54,12 +55,14 @@ python -m http.server --directory docs
 
 ## 守ること
 
-- ES moduleにせず、ロジック→DOMの順でdefer付きの古典スクリプトを読み込む
+- ES moduleにせず、i18n→ロジック→DOMの順でdefer付きの古典スクリプトを読み込む
 - 外部リクエスト0件を維持し、依存・CDN・Webフォントを追加しない
 - innerHTMLを使わず、createElementとtextContentで描画する
 - CSPにunsafe-inline・frame-ancestorsを入れない
-- 入力・結果・鍵を保存せず、localStorageは検証済みのテーマ値のみ
+- 入力・結果・鍵を保存せず、localStorageは検証済みのテーマ値と言語の選択のみ
 - 乱数は画面側のcrypto.getRandomValuesで生成し、剰余の偏りを除く
 - READMEの表・例とロジックを同時に更新し、期待値の変更で失敗を隠さない
 - かなの例は重複のない句の例であり、史料に載る鍵と説明しない
-- 和風のカード構成を保持し、320px・390pxと1280×1000で表示を確認する
+- 訳すのは画面の文言だけ。いろは48文字・漢数字・かなの鍵・入力例は扱う対象なので訳さない
+- 表示中の状態（コピー済み・テーマ・鍵の指摘・通知）は文字列でなくキーで持ち、languagechangeで訳し直す
+- 和風のカード構成を保持し、320px・390pxと1280×1000で、日本語と英語の両方で表示を確認する
