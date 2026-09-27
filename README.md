@@ -36,6 +36,8 @@ hub: true
 
 # Uesugi Cipher Tool - 字変四十八の上杉暗号ツール
 
+[English](README.en.md) · 日本語
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/uesugi-cipher?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/ipusiron/uesugi-cipher?style=social)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ipusiron/uesugi-cipher)
@@ -72,6 +74,7 @@ hub: true
 - 濁点・半濁点・小書き・カタカナの自動変換と、未収録文字のそのまま出力
 - 使用文字のハイライト（色・太い枠・太字）と、動きを抑える設定への対応
 - 和風のカード構成、ライト・ダークモード
+- 日本語・英語の切り替え（画面の文言のみ。いろは48文字・漢数字・かなの鍵は扱う対象なので訳しません）
 - 📱 レスポンシブ対応（1024px以上は入力・結果と表の2カラム、未満は縦積み）
 - 結果のコピー、入力検証と通知、実行ごとのハイライトリセット
 - いろは歌の配置と暗号化・復号過程の視覚化による古典暗号の学習
@@ -327,7 +330,7 @@ hub: true
 
 ## 🔒 セキュリティとプライバシー
 
-ツールの画面は外部へのリクエストが0件で、入力・結果・鍵を送信しません。Google Fontsを含む外部リソースは読み込みません。ブラウザーに保存するのはテーマ設定だけです。
+ツールの画面は外部へのリクエストが0件で、入力・結果・鍵を送信しません。Google Fontsを含む外部リソースは読み込みません。ブラウザーに保存するのはテーマ設定と言語の選択だけです。
 
 CSPをmetaで設定し、インラインスクリプト・インラインスタイルを使わず、通信をconnect-src 'none'で禁止しています。表示はtextContentとDOM構築で行い、鍵の種類・文字数・重複も検査します。referrerはno-referrer、外部リンクはnoopener noreferrerです。
 
@@ -341,7 +344,7 @@ Node 22以上で、リポジトリーのルートから実行します。依存�
 npm test
 ```
 
-node --testで既知解答・48文字の往復・鍵・入力境界・配色・HTMLを検証します。READMEの表と例も再計算し、GitHub Actionsのpushとpull_requestで自動実行します。
+node --testで既知解答・48文字の往復・鍵・入力境界・配色・HTMLを検証します。日英の辞書はキーの集合・差し込みの名前・訳し忘れの和文を照合し、対応表に触れていないことも縛ります。READMEの表と例も再計算し、GitHub Actionsのpushとpull_requestで自動実行します。
 
 ## 🔗 参考
 
@@ -366,6 +369,7 @@ node --testで既知解答・48文字の往復・鍵・入力境界・配色・H
 ```text
 uesugi-cipher/
 ├── README.md                  # この説明
+├── README.en.md               # 英語版の説明
 ├── CLAUDE.md                  # 開発時の構成と決まり
 ├── LICENSE                    # MITライセンス
 ├── package.json               # 依存なしのnpm test
@@ -376,6 +380,7 @@ uesugi-cipher/
 │   │   └── style.css          # 配色・レスポンシブ表示
 │   └── js/
 │       ├── uesugi-logic.js    # DOMに依存しない暗号ロジック
+│       ├── i18n.js            # 日本語と英語の文言と切り替え
 │       └── script.js          # DOM・テーマ・コピー
 ├── assets/
 │   ├── screenshot.png         # 保存している旧画像
@@ -387,6 +392,7 @@ uesugi-cipher/
 │   ├── key.test.js            # 鍵・シャッフル・往復
 │   ├── readme.test.js         # 文書・画像参照の一致
 │   ├── html.test.js           # HTML・安全な描画
+│   ├── i18n.test.js           # 辞書とdata-i18nの照合
 │   ├── contrast.test.js       # CSSから配色を計算
 │   └── format.test.js         # 可読な行長・行数
 └── .github/

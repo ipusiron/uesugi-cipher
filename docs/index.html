@@ -13,89 +13,94 @@
 </head>
 <body>
   <header>
-    <h1>字変四十八の上杉暗号ツール</h1>
-    <button id="themeToggle" class="theme-toggle" aria-label="ダークモードに切り替え" aria-pressed="false">🌙</button>
+    <div class="header-actions">
+      <button id="langToggle" class="lang-toggle" type="button"
+        data-i18n="app.langButton" data-i18n-aria-label="app.langAria">English</button>
+      <button id="themeToggle" class="theme-toggle" aria-label="ダークモードに切り替え" aria-pressed="false">🌙</button>
+    </div>
+    <h1 data-i18n="app.heading">字変四十八の上杉暗号ツール</h1>
   </header>
-  <noscript>このツールを使うには、ブラウザーのJavaScriptを有効にしてください。</noscript>
+  <noscript>このツールを使うには、ブラウザーのJavaScriptを有効にしてください。 / This tool needs JavaScript. Please enable it in your browser.</noscript>
   <main class="app">
-  <section class="work-area" aria-label="暗号の入力と結果">
+  <section class="work-area" aria-label="暗号の入力と結果" data-i18n-aria-label="work.aria">
 
   <div class="input-section">
-    <label for="inputText">入力:</label>
-    <textarea id="inputText" rows="2" placeholder="例: てきみゆ（濁点・カタカナは清音のひらがなに自動変換します）"></textarea>
-    <p class="input-hint">空白は省き、改行は残します。入力は10,000文字までです。</p>
+    <label for="inputText" data-i18n="input.label">入力:</label>
+    <textarea id="inputText" rows="2"></textarea>
+    <p class="input-hint" data-i18n="input.hint">空白は省き、改行は残します。入力は10,000文字までです。</p>
   </div>
 
-  <h2 class="settings-heading">設定</h2>
+  <h2 class="settings-heading" data-i18n="settings.heading">設定</h2>
   <div class="controls">
     <fieldset class="mode-toggle">
-      <legend>モード切替</legend>
-      <label><input type="radio" name="mode" value="encrypt" checked> 暗号化</label>
-      <label><input type="radio" name="mode" value="decrypt"> 復号</label>
+      <legend data-i18n="mode.legend">モード切替</legend>
+      <label><input type="radio" name="mode" value="encrypt" checked> <span data-i18n="mode.encrypt">暗号化</span></label>
+      <label><input type="radio" name="mode" value="decrypt"> <span data-i18n="mode.decrypt">復号</span></label>
     </fieldset>
 
     <fieldset class="mode-toggle" id="notationGroup" aria-describedby="notationHint">
-      <legend>数字表記（暗号化の出力と表の見出し）</legend>
-      <label><input type="radio" name="numeral" value="arabic" checked> アラビア数字</label>
-      <label><input type="radio" name="numeral" value="kanji"> 漢数字</label>
-      <p id="notationHint" class="input-hint" hidden>かなの鍵では数字表記を使いません。</p>
+      <legend data-i18n="numeral.legend">数字表記（暗号化の出力と表の見出し）</legend>
+      <label><input type="radio" name="numeral" value="arabic" checked> <span data-i18n="numeral.arabic">アラビア数字</span></label>
+      <label><input type="radio" name="numeral" value="kanji"> <span data-i18n="numeral.kanji">漢数字</span></label>
+      <p id="notationHint" class="input-hint" data-i18n="numeral.hint" hidden>かなの鍵では数字表記を使いません。</p>
     </fieldset>
   </div>
 
   <fieldset class="mode-toggle key-settings">
-    <legend>鍵</legend>
+    <legend data-i18n="key.legend">鍵</legend>
     <div class="key-modes">
-      <label><input type="radio" name="keyMode" value="standard" checked>標準（鍵なし）</label>
-      <label><input type="radio" name="keyMode" value="numeric">数字の並べ替え</label>
-      <label><input type="radio" name="keyMode" value="kana">かな7文字×2（和歌の下の句など）</label>
+      <label><input type="radio" name="keyMode" value="standard" checked><span data-i18n="key.modeStandard">標準（鍵なし）</span></label>
+      <label><input type="radio" name="keyMode" value="numeric"><span data-i18n="key.modeNumeric">数字の並べ替え</span></label>
+      <label><input type="radio" name="keyMode" value="kana"><span data-i18n="key.modeKana">かな7文字×2（和歌の下の句など）</span></label>
     </div>
     <div id="keyFields" hidden>
       <div class="key-inputs">
         <div>
-          <label for="colKey">列の鍵（右の列から順に）</label>
+          <label for="colKey" data-i18n="key.colLabel">列の鍵（右の列から順に）</label>
           <input id="colKey" type="text" autocomplete="off" spellcheck="false" aria-describedby="colKeyMessage">
           <p id="colKeyMessage" class="key-message" aria-live="polite"></p>
         </div>
         <div>
-          <label for="rowKey">行の鍵（上の行から順に）</label>
+          <label for="rowKey" data-i18n="key.rowLabel">行の鍵（上の行から順に）</label>
           <input id="rowKey" type="text" autocomplete="off" spellcheck="false" aria-describedby="rowKeyMessage">
           <p id="rowKeyMessage" class="key-message" aria-live="polite"></p>
         </div>
       </div>
       <div class="key-actions">
-        <button id="keyExampleBtn" class="copy-btn">例を入れる</button>
-        <button id="keyRandomBtn" class="copy-btn">ランダムに作る</button>
+        <button id="keyExampleBtn" class="copy-btn" data-i18n="key.exampleButton">例を入れる</button>
+        <button id="keyRandomBtn" class="copy-btn" data-i18n="key.randomButton">ランダムに作る</button>
       </div>
-      <p id="kanaExampleHint" class="input-hint" hidden>かなの例は阿倍仲麻呂の歌の下の句です。重複のない句の例として選んだもので、史料に載っている鍵ではありません。</p>
+      <p id="kanaExampleHint" class="input-hint" data-i18n="key.kanaHint"
+        hidden>かなの例は阿倍仲麻呂の歌の下の句です。重複のない句の例として選んだもので、史料に載っている鍵ではありません。</p>
     </div>
   </fieldset>
-  <button class="execute-btn" id="runBtn">実行</button>
+  <button class="execute-btn" id="runBtn" data-i18n="button.run">実行</button>
 
   <div class="result-section">
     <div class="result-header">
-      <h2>結果</h2>
-      <button class="copy-btn" id="swapBtn" disabled>結果を入力に送る</button>
-      <button class="copy-btn" id="copyBtn" disabled>
-        📋 コピー
-      </button>
+      <h2 data-i18n="result.heading">結果</h2>
+      <button class="copy-btn" id="swapBtn" data-i18n="button.swap" disabled>結果を入力に送る</button>
+      <button class="copy-btn" id="copyBtn" data-state="idle" disabled>📋 コピー</button>
     </div>
     <div class="result-message" id="resultMessage" aria-live="polite"></div>
     <div class="output-area" id="outputText" aria-live="polite" tabindex="0"></div>
   </div>
   </section>
   <section class="table-container" aria-labelledby="matrixHeading">
-    <h2 id="matrixHeading">換字表</h2>
+    <h2 id="matrixHeading" data-i18n="matrix.heading">換字表</h2>
     <div id="matrix"></div>
-    <p class="input-hint">右上から縦に並べ、列→行の順に読みます。列7・行7は空きマスです。</p>
+    <p class="input-hint" data-i18n="matrix.hint">右上から縦に並べ、列→行の順に読みます。列7・行7は空きマスです。</p>
   </section>
   </main>
 
   <div class="divider"></div>
 
   <footer class="footer">
-    🔗 GitHubリポジトリーはこちら（<a href="https://github.com/ipusiron/uesugi-cipher" target="_blank" rel="noopener noreferrer">ipusiron/uesugi-cipher</a>）
+    <span data-i18n="footer.prefix">🔗 GitHubリポジトリーはこちら（</span><a href="https://github.com/ipusiron/uesugi-cipher"
+      target="_blank" rel="noopener noreferrer">ipusiron/uesugi-cipher</a><span data-i18n="footer.suffix">）</span>
   </footer>
 
+  <script src="js/i18n.js" defer></script>
   <script src="js/uesugi-logic.js" defer></script>
   <script src="js/script.js" defer></script>
 </body>

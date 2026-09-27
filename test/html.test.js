@@ -18,18 +18,19 @@ test('CSP・meta・外部リソースなし・古典スクリプト順序', () =
     "font-src 'self'", "connect-src 'none'", "object-src 'none'", "base-uri 'self'", "form-action 'self'"]) assert.ok(csp.includes(rule));
   assert.doesNotMatch(html, /\son\w+\s*=|\sstyle\s*=|<style\b|type=["']module/i);
   const scripts = [...html.matchAll(/<script\b([^>]+)>/g)].map(match => match[1]);
-  assert.deepEqual(scripts, [' src="js/uesugi-logic.js" defer', ' src="js/script.js" defer']);
+  assert.deepEqual(scripts, [' src="js/i18n.js" defer', ' src="js/uesugi-logic.js" defer',
+    ' src="js/script.js" defer']);
   assert.doesNotMatch(html, /<(?:script|link|img)\b[^>]*(?:src|href)=["']https?:\/\//i);
   assert.doesNotMatch(read('docs/css/style.css'), /@import|https?:\/\//i);
 });
 
 test('主要ID・fieldset・読み上げ・見出し・外部リンク', () => {
   for (const id of ['inputText', 'runBtn', 'swapBtn', 'copyBtn', 'matrix', 'outputText', 'resultMessage',
-    'colKey', 'rowKey', 'keyExampleBtn', 'keyRandomBtn', 'themeToggle']) assert.match(html, new RegExp('id="' + id + '"'));
+    'colKey', 'rowKey', 'keyExampleBtn', 'keyRandomBtn', 'themeToggle', 'langToggle']) assert.match(html, new RegExp('id="' + id + '"'));
   const fieldsets = [...html.matchAll(/<fieldset\b[^>]*>([\s\S]*?)<\/fieldset>/g)];
   assert.equal(fieldsets.length, 3);
   for (const [index, name] of ['mode', 'numeral', 'keyMode'].entries()) {
-    assert.match(fieldsets[index][1], /<legend>[^<]+<\/legend>/);
+    assert.match(fieldsets[index][1], /<legend[^>]*>[^<]+<\/legend>/);
     assert.ok(fieldsets[index][1].includes('name="' + name + '"'));
   }
   for (const id of ['resultMessage', 'outputText']) {
@@ -48,7 +49,8 @@ test('主要ID・fieldset・読み上げ・見出し・外部リンク', () => {
 test('ロジックとUIの安全な描画・依存分離', () => {
   const logic = read('docs/js/uesugi-logic.js');
   const script = read('docs/js/script.js');
-  for (const source of [logic, script]) assert.doesNotMatch(source, /innerHTML|insertAdjacentHTML|document\.write|console\.log|Math\.random/);
+  const i18n = read('docs/js/i18n.js');
+  for (const source of [logic, script, i18n]) assert.doesNotMatch(source, /innerHTML|insertAdjacentHTML|document\.write|console\.log|Math\.random/);
   assert.doesNotMatch(logic, /\bdocument\b|\bwindow\b|\bcrypto\b/);
   assert.match(script, /crypto\.getRandomValues/);
   assert.match(script, /256 - 256 % n/);

@@ -84,8 +84,9 @@ test('画像・シリーズ・構成の参照が実在', () => {
   for (const [, image] of images) assert.ok(fs.existsSync(path.join(root, image)), image);
   assert.match(readme, /Day012 - 生成AIで作るセキュリティツール100/);
   assert.match(readme, /page_id=42163/);
-  for (const file of ['LICENSE', 'CLAUDE.md', 'package.json', 'docs/index.html', 'docs/favicon.svg',
-    'docs/css/style.css', 'docs/js/script.js', 'docs/js/uesugi-logic.js', '.github/workflows/test.yml', '.github/workflows/deploy.yml']) {
+  for (const file of ['LICENSE', 'CLAUDE.md', 'package.json', 'README.en.md', 'docs/index.html', 'docs/favicon.svg',
+    'docs/css/style.css', 'docs/js/script.js', 'docs/js/uesugi-logic.js', 'docs/js/i18n.js', 'test/i18n.test.js',
+    '.github/workflows/test.yml', '.github/workflows/deploy.yml']) {
     assert.ok(fs.existsSync(path.join(root, file)));
     assert.ok(section('## 📁', '## 💻').includes(path.basename(file)), file);
   }
