@@ -12,7 +12,7 @@ English · [日本語](README.md)
 
 A browser tool for the **Uesugi cipher** (*jihen-shijūhachi*, 字変四十八), a Japanese substitution cipher handed down as a Sengoku-period military secret.
 
-The 48 characters of the *iroha* poem are laid out in a 7×7 grid, and every character becomes a pair of coordinates read **column first, then row**. The mechanism is the same idea as the Polybius square of ancient Greece, arrived at independently on the other side of the world.
+The 48 characters of the *iroha* poem are laid out in a 7×7 grid, and every character becomes a pair of coordinates read **column first, then row**. The mechanism is the same idea as the Polybius square recorded in ancient Greece, arrived at independently on the other side of the world.
 
 ---
 
@@ -164,6 +164,8 @@ Kanji, Latin letters, digits and punctuation are passed through unchanged, with 
 
 The cipher is said to come from *Bukei-yōryaku* (『武経要略』), a treatise on the art of war attributed to Usami Sadayuki, a retainer of the warlord **Uesugi Kenshin** (1530–1578). The chapter *Kōkan-hen* describes the *jihen-shijūhachi* — literally "forty-eight character changes" — method.
 
+A word on the Greek comparison. What Polybius set down in Book X of the Histories was not a cipher for keeping secrets but a method of signalling with torches: the 24 letters of the Greek alphabet were split across five boards, and torches raised on either side of a screen gave the number of the board and the position of the letter on it. The 5×5 table now called the Polybius square is a later form, shaped to fit the Latin alphabet into 25 cells, and the name itself is later too. What the *jihen-shijūhachi* shares with it is the idea of naming a character by a pair of coordinates, not any borrowing from ancient Greece. You can try the original method in [Polybius CipherLab](https://ipusiron.github.io/polybius-cipherlab/).
+
 ### What the sources actually support
 
 The attribution comes with real reservations.
@@ -260,6 +262,7 @@ npm test
 
 - HH News & Reports, "Ciphers and the history of ciphers", part 3: "Japan in the history of cryptography — the Sengoku-period Uesugi cipher" https://www.hummingheads.co.jp/reports/series/ser01/110519.html
 - Mynavi TECH+, "Trying the Japanese programming language Nadeshiko from scratch", part 74 https://news.mynavi.jp/techplus/article/nadeshiko-74/
+- Polybius CipherLab (Day067) — the fire signal of Polybius' original text and the later 5×5 square https://ipusiron.github.io/polybius-cipherlab/
 
 ### Books and catalogues
 
