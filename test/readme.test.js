@@ -69,9 +69,10 @@ test('歴史補足と参考10件', () => {
   const refs = section('## 🔗 参考', '## 📁');
   const web = refs.split('### Web')[1].split('### 文献・目録')[0].match(/^- .+$/gm);
   const papers = refs.split('### 文献・目録')[1].match(/^- .+$/gm);
-  assert.equal(web.length, 2);
+  assert.equal(web.length, 3);
   assert.equal(papers.length, 8);
-  for (const value of ['hummingheads.co.jp/reports/series/ser01/110519.html', 'news.mynavi.jp/techplus/article/nadeshiko-74/']) {
+  for (const value of ['hummingheads.co.jp/reports/series/ser01/110519.html', 'news.mynavi.jp/techplus/article/nadeshiko-74/',
+    'ipusiron.github.io/polybius-cipherlab/']) {
     assert.ok(refs.includes(value));
   }
   for (const value of ['新沢佳大', '高橋修「軍学者', '高橋修『【異説】', '遊佐教寛「カミソリ',
