@@ -238,6 +238,20 @@ Ciphertext: 5-7 6-3 6-6 6-4
 4. A dictionary attack settles the rest
 ```
 
+## 🎯 Use cases
+
+### Ways of using this tool in particular
+
+- Confirming that a letter is given as row-column coordinates (math and coding classes): a 7x7 grid turns one kana into a pair of "row-column" numbers. "てきみゆ" becomes `5-7 6-3 6-6 6-4`, and decrypting the same coordinates returns the original. You can confirm, on kana, the idea of pointing to a position by coordinates, the same as a spreadsheet cell address or a map grid
+- Confirming that dakuten and small kana are leveled to plain kana (information-loss classes): the grid holds only plain kana, so "がっこう" is changed to か, つ and so on before being turned into coordinates. The conversion log keeps "が to か" and "っ to つ". You can confirm that the distinction of dakuten and small kana is lost and that what was changed is kept in a visible form
+- Confirming that a keyed mode changes the coordinates (key-substitution classes): with a key that reorders the row and column headers, the same "て" gets a different coordinate. With the standard key it is `5-7`, but with a key whose headers are reversed it is `3-1`. Decrypting with the right key returns "て", while decrypting with the standard key without knowing the key gives a different letter, "よ". You can confirm that the key changes the coordinate mapping
+
+### General uses
+
+- Learn how the Uesugi cipher works as a Japanese classical cipher in class or self-study
+- Make a cipher using grid coordinates for puzzles and games
+- Use it as material to compare, with the Polybius square (Latin letters), ciphers that give a letter by coordinates
+
 ## 🔒 Security and privacy
 
 The page makes zero outbound requests. Your input, the result and the key are never transmitted. No external resources are loaded, Google Fonts included. The only things kept in the browser are the theme and the language you picked.
