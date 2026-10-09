@@ -108,3 +108,19 @@ test('YAMLのコメント・固定値・キー順・ブロック形式', () => {
     assert.equal(yaml[1].match(new RegExp('^' + key + ': (.+)$', 'm'))[1], value);
   }
 });
+
+test('UC: ならではの使い方を uesugi-logic.js で再計算', () => {
+  assert.equal(L.encrypt('てきみゆ').text, '5-7 6-3 6-6 6-4');
+  assert.equal(L.decrypt('5-7 6-3 6-6 6-4').text, 'てきみゆ');
+  const g = L.encrypt('がっこう');
+  assert.deepEqual(g.conversions, [{ from: 'が', to: 'か' }, { from: 'っ', to: 'つ' }]);
+  assert.equal(L.encrypt('て').text, '5-7');
+  const keyed = L.encrypt('て', { colKey: '7654321', rowKey: '7654321' }).text;
+  assert.equal(keyed, '3-1');
+  assert.equal(L.decrypt(keyed, { colKey: '7654321', rowKey: '7654321' }).text, 'て');
+  assert.equal(L.decrypt(keyed).text, 'よ');
+  const en = fs.readFileSync(path.join(root, 'README.en.md'), 'utf8');
+  for (const md of [readme, en]) {
+    assert.ok(md.includes('5-7 6-3 6-6 6-4') && md.includes('3-1'));
+  }
+});
